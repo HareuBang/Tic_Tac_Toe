@@ -1,0 +1,74 @@
+.main {
+  text-align: center;
+
+  .header {
+    font-size: 19px;
+    margin-bottom: 20px;
+
+    .boardSet{
+      margin-right: 145px;
+      appearance: none;
+      font-size: 1rem;
+      font-weight: 700;
+      padding: .6em;
+      border: 1px solid #aaa;
+      border-radius: 0.5em;
+    }
+
+    button {
+      width: 50px;
+      height: 50px;
+      line-height: 25px;
+      border-width: 5px;
+      border-radius: 1.2rem;
+      background-color: #fff;
+      margin-right: 20px;
+      font-size: 24px;
+      font-weight: 700;
+    }
+    .Omark:hover {
+      border-color: blue;
+    }
+    .Xmark:hover {
+      border-color: red;
+    }
+  }
+
+  .boardContainer {
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+
+    .board {
+      width: 100px;
+      height: 100px;
+      margin-left: 5px;
+      line-height: 100px;
+      font-size: 56px;
+      font-weight: 900;
+      border: 3px solid black;
+    }
+  }
+
+  .footer {
+    span{
+      font-size: 32px;
+      font-weight: 700;
+    }
+
+    .reset {
+      width: 90px;
+      height: 40px;
+      line-height: 25px;
+      border-width: 5px;
+      border-radius: 1.2rem;
+      background-color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      margin-top: 10px;
+    }
+    .reset:hover {
+      border-color: yellowgreen;
+    }
+  }
+}
