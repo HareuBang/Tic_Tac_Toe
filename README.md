@@ -1,3 +1,6 @@
+주소
+https://hareubang.github.io/Tic_Tac_Toe/
+
 # 24-09-01
 
 1. 변수명 여러개 반복문으로 생성
