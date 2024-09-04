@@ -2,13 +2,12 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import './sass/View.scss'
 
 const ViewComponent = () => {
-  // O X가 그려질 보드판
   const [marks, setMarks] = useState(Array(9).fill(""));
   const [player, setPlayer] = useState({o: [], x: []});
   const [result, setResult] = useState("");      
   const [turn, setTurn] = useState(false);
-
   const [boardWh, setBoardWH] = useState("350px");
+  const count = useRef(0);
 
   function boardSet(e){
     let size = "350px";
@@ -22,6 +21,8 @@ const ViewComponent = () => {
     }
     setBoardWH(size);
 
+    restartHandler();
+
     const tempMarks = Array(parseInt(e.target.value)).fill("");
     setMarks(tempMarks);
   }
@@ -29,15 +30,15 @@ const ViewComponent = () => {
   const [top_down, left_right] = useMemo(() => {
     const tempTop_down = [];
     const tempLeft_right = [];
-
     let sqrt = Math.sqrt(marks.length);
+
     for(let i=0; i<sqrt; i++){
       tempTop_down.push(i);
       tempLeft_right.push(i * sqrt);
     }
 
     return [tempTop_down, tempLeft_right];
-  }, [])
+  }, [marks])
 
   function markHandler(spot) {
     const newMarks = [...marks];
@@ -47,15 +48,21 @@ const ViewComponent = () => {
     }
 
     if(turn){                               // turn : true
-      newMarks[spot] = "O";
+      newMarks[spot] = `O`;
       setMarks(newMarks);
       setPlayer(prev => ({...prev, o: [...prev.o, spot]}));
     } else {                                // turn : false 
-      newMarks[spot] = "X"; 
+      newMarks[spot] = `X`; 
       setMarks(newMarks);
       setPlayer(prev => ({...prev, x: [...prev.x, spot]}));
     }
 
+    if(count.current >= (newMarks.length - 3)) {
+      let delSpot = turn ? player.o.shift() : player.x.shift()
+      newMarks[delSpot] = "";
+    }
+
+    count.current += 1;
     setTurn(!turn);
   }
 
@@ -104,6 +111,14 @@ const ViewComponent = () => {
       }
     }
   }
+
+  function restartHandler() {
+    setMarks(prev => Array(parseInt(prev.length)).fill(""))
+    setPlayer({o: [], x: []})
+    setResult("");
+    setTurn(false);
+    count.current = 0;
+  }
   
   return (
     <div className='main'>
@@ -114,10 +129,25 @@ const ViewComponent = () => {
           <option value={16}>4 X 4</option>
           <option value={25}>5 X 5</option>
         </select>
-        <button className='Omark' onClick={() => setTurn(true)}>O</button>
-        <button className='Xmark' onClick={() => setTurn(false)}>X</button>
+        <button 
+          id='Omark' 
+          className={turn ? 'buttonO-active' : 'buttonO-inactive'}
+          disabled={count.current >= 1 ? "disabled" : "" } 
+          onClick={() => setTurn(true)}>
+          O
+        </button>
+        <button 
+          id='Xmark'
+          className={turn ? 'buttonX-inactive' : 'buttonX-active'}
+          disabled={count.current >= 1 ? "disabled" : "" }   
+          onClick={() => setTurn(false)}>
+          X
+        </button>
       </div>
-      <div className='boardContainer' style={{width: boardWh, height: boardWh}}>
+      <div 
+      id='boardContainer'
+      className={result === "" ? "" : "no-click"}
+      style={{width: boardWh, height: boardWh}}>
         {
           marks.map((mark, idx) => (
             <div 
@@ -131,9 +161,11 @@ const ViewComponent = () => {
         }
       </div>
       <div className='footer'>
-        <span>{result}</span>
+        <span className={turn ? 'span-active' : 'span-inactive'}>
+          {result}
+        </span>
         <br />
-        <button className='reset'>RESET</button>
+        <button className='restart' onClick={restartHandler}>RESTART</button>
       </div>
     </div>
   );
