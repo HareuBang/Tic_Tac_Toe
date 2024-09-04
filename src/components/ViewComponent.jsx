@@ -8,6 +8,7 @@ const ViewComponent = () => {
   const [turn, setTurn] = useState(false);
   const [boardWh, setBoardWH] = useState("350px");
   const count = useRef(0);
+  const winColor = useRef({});
 
   function boardSet(e){
     let size = "350px";
@@ -106,7 +107,10 @@ const ViewComponent = () => {
     for(let j=0; j<gap.length; j++) {
       test = Array(sqrt).fill(spot).map((_, i) => spot + i * gap[j]);
       if(test.every(val => play.includes(val))){
-        setResult(`~~ ! ${turn ? "X" : "O"} WINNER ! ~~`);
+        test.forEach(winIdx => {
+          winColor.current[winIdx].style.color = turn ? "red" : "blue";
+        })
+        setResult(`${turn ? "X" : "O"} WIN`);
         return;
       }
     }
@@ -116,8 +120,10 @@ const ViewComponent = () => {
     setMarks(prev => Array(parseInt(prev.length)).fill(""))
     setPlayer({o: [], x: []})
     setResult("");
-    setTurn(false);
     count.current = 0;
+    for (const key in winColor.current) {
+      winColor.current[key].style.color = "black";
+    }
   }
   
   return (
@@ -155,7 +161,8 @@ const ViewComponent = () => {
               className='board' 
               value={idx} 
               onClick={() => markHandler(idx)}
-            > {mark}
+              ref={el => winColor.current[idx] = el}
+            >{mark}
             </div>
           ))
         }
