@@ -25,8 +25,13 @@ yarn-error.log*
 public/favicon.ico
 public/logo192.png
 public/logo512.png
+public/manifest.json
+public/robots.txt
 
-App.test.js
-logo.svg
-reportWebVitals.js
-setupTests.js
+src/App.test.js
+src/logo.svg
+src/reportWebVitals.js
+src/setupTests.js
+
+package-lock.json
+package.json
