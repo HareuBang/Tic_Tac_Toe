@@ -122,7 +122,10 @@ const ViewComponent = () => {
     setResult("");
     count.current = 0;
     for (const key in winColor.current) {
-      winColor.current[key].style.color = "black";
+        if(winColor.current[key]){ 
+          // ViewComponent.jsx:126 Uncaught TypeError: Cannot read properties of null (reading 'style') - Error
+          winColor.current[key].style.color = "black";
+        }
     }
   }
   
