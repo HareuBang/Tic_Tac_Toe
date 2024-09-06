@@ -10,6 +10,7 @@ const ViewComponent = () => {
   const count = useRef(0);
   const winColor = useRef({});
 
+  /* 보드판 크기 설정 */
   function boardSet(e){
     let size = "350px";
     switch(e.target.value) {
@@ -21,43 +22,33 @@ const ViewComponent = () => {
         break;
     }
     setBoardWH(size);
-
     restartHandler();
 
+    // 변경 가능성 있음.
+    // 좀 더 간단하게 가능할 것 같아. restartHandler()와 함께
     const tempMarks = Array(parseInt(e.target.value)).fill("");
     setMarks(tempMarks);
   }
 
-  const [top_down, left_right] = useMemo(() => {
-    const tempTop_down = [];
-    const tempLeft_right = [];
-    let sqrt = Math.sqrt(marks.length);
-
-    for(let i=0; i<sqrt; i++){
-      tempTop_down.push(i);
-      tempLeft_right.push(i * sqrt);
-    }
-
-    return [tempTop_down, tempLeft_right];
-  }, [marks])
-
+  /* 보드판에 O,X 배치 및 기록 */
   function markHandler(spot) {
     const newMarks = [...marks];
 
-    if(newMarks[spot] !== ""){              // 중복 선택 방지
+    if(newMarks[spot] !== ""){
       return;
     }
 
-    if(turn){                               // turn : true
-      newMarks[spot] = `O`;
+    if(turn){
+      newMarks[spot] = `O${count.current}`;
       setMarks(newMarks);
       setPlayer(prev => ({...prev, o: [...prev.o, spot]}));
-    } else {                                // turn : false 
-      newMarks[spot] = `X`; 
+    } else {
+      newMarks[spot] = `X${count.current}`; 
       setMarks(newMarks);
       setPlayer(prev => ({...prev, x: [...prev.x, spot]}));
     }
 
+    /* 남은 칸수가 3개일 때 처음에 배치한 O,X부터 순서대로 없어진다. */
     if(count.current >= (newMarks.length - 3)) {
       let delSpot = turn ? player.o.shift() : player.x.shift()
       newMarks[delSpot] = "";
@@ -75,6 +66,22 @@ const ViewComponent = () => {
     myFunction(player.x);
   }, [player.x])
 
+  /* 보드판 크기에 따라 승리 조건을 정의하는 조합 */
+  const [top_down, left_right] = useMemo(() => {
+    const tempTop_down = [];
+    const tempLeft_right = [];
+
+    let sqrt = Math.sqrt(marks.length);
+
+    for(let i=0; i<sqrt; i++){
+      tempTop_down.push(i);
+      tempLeft_right.push(i * sqrt);
+    }
+
+    return [tempTop_down, tempLeft_right];
+  }, [marks])
+
+  /*  */
   function myFunction(play) {
     let sqrt = Math.sqrt(marks.length);
     top_down.forEach(key => {
@@ -101,21 +108,26 @@ const ViewComponent = () => {
     })
   }
 
+  /* 승리 확인 */
   function winConditionCheck(play, spot, gap) {
     let test = [];
     let sqrt = Math.sqrt(marks.length);
-    for(let j=0; j<gap.length; j++) {
-      test = Array(sqrt).fill(spot).map((_, i) => spot + i * gap[j]);
+
+    for(let gapIdx=0; gapIdx<gap.length; gapIdx++) {
+      test = Array(sqrt).fill(spot).map((_, idx) => spot + idx * gap[gapIdx]);
+
       if(test.every(val => play.includes(val))){
         test.forEach(winIdx => {
           winColor.current[winIdx].style.color = turn ? "red" : "blue";
         })
+
         setResult(`${turn ? "X" : "O"} WIN`);
         return;
       }
     }
   }
 
+  /* 재시작 (초기화) */
   function restartHandler() {
     setMarks(prev => Array(parseInt(prev.length)).fill(""))
     setPlayer({o: [], x: []})
